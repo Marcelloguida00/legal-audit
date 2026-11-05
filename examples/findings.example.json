@@ -1,0 +1,41 @@
+[
+  {
+    "id": "LA-001",
+    "severity": "critical",
+    "title": "Meta Pixel caricato prima del consenso su pagine di servizi sanitari",
+    "area": "special-categories",
+    "location": ["src/app/layout.tsx:22", "Cookie Policy §4"],
+    "legal_basis": ["Art. 9.1 GDPR", "Art. 122 D.Lgs. 196/2003", "Art. 5(3) Dir. 2002/58/CE", "Art. 7 GDPR"],
+    "problem": "Il pixel `fbq('init')` viene eseguito al primo render e invia a Meta l'URL completo, incluse pagine come /servizi/fecondazione-assistita, da cui si inferisce un dato sanitario. Nessun consenso è stato raccolto.",
+    "risk_scenario": "Reclamo al Garante o inchiesta giornalistica: trattamento di dati sanitari senza deroga Art. 9.2 e trasferimento verso un terzo; sanzione fascia Art. 83.5 e azioni risarcitorie Art. 82.",
+    "declared_vs_actual": true,
+    "mitigation": {
+      "code": "Rimuovere Meta Pixel da tutte le pagine dei servizi sanitari; altrove inizializzarlo solo nel callback di consenso 'marketing'.",
+      "data_flow": "Bloccare l'invio di URL e titoli di pagina contenenti termini clinici a qualsiasi tracker di terze parti.",
+      "policy_text": {
+        "replace": "Utilizziamo cookie di terze parti per migliorare la tua esperienza.",
+        "with": "Sulle pagine relative ai servizi sanitari non utilizziamo alcuno strumento di tracciamento pubblicitario. Sulle altre pagine, solo con il tuo consenso, utilizziamo Meta Pixel (Meta Platforms Ireland Ltd., contitolare per la raccolta) per misurare l'efficacia delle nostre campagne."
+      }
+    },
+    "verification": "Finestra anonima, nessuna interazione col banner: in DevTools > Network nessuna richiesta a facebook.com/tr su nessuna pagina; dopo il consenso, nessuna richiesta sulle pagine /servizi/*.",
+    "confidence": "confirmed"
+  },
+  {
+    "id": "LA-002",
+    "severity": "medium",
+    "title": "Destinatari indicati solo come 'partner selezionati'",
+    "area": "gdpr-core",
+    "location": ["Privacy Policy §5"],
+    "legal_basis": ["Art. 13.1.e GDPR"],
+    "problem": "L'informativa non indica né i destinatari né le loro categorie, impedendo all'interessato di capire chi riceve i dati.",
+    "risk_scenario": "Contestazione per informativa incompleta in caso di reclamo o ispezione.",
+    "mitigation": {
+      "policy_text": {
+        "replace": "I dati possono essere comunicati a partner selezionati.",
+        "with": "I dati sono comunicati ai fornitori elencati nella pagina 'Sub-responsabili' (nome, finalità, Paese), che agiscono come responsabili del trattamento ai sensi dell'art. 28 GDPR."
+      }
+    },
+    "verification": "La policy pubblicata contiene il link alla pagina Sub-responsabili e questa elenca ogni SDK presente nel codice.",
+    "confidence": "confirmed"
+  }
+]

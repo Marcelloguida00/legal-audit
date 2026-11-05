@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Contratto per findings.json. scripts/validate-findings.cjs lo applica senza dipendenze.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "severity", "title", "area", "location", "legal_basis", "problem", "risk_scenario", "mitigation", "verification"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^LA-[0-9]{3,}$",
+        "description": "Identificativo stabile, es. LA-007"
+      },
+      "severity": {
+        "type": "string",
+        "enum": ["critical", "high", "medium", "low"],
+        "description": "critical=🔴 high=🟠 medium=🟡 low=🟢"
+      },
+      "title": { "type": "string", "minLength": 5 },
+      "area": {
+        "type": "string",
+        "enum": ["gdpr-core", "consent-cookies", "rights-retention", "transfers-vendors", "terms-liability", "special-categories", "ai-automation", "security-breach", "other"]
+      },
+      "location": {
+        "type": "array",
+        "minItems": 1,
+        "description": "Dove si trova il problema: file:riga, sezione del documento, schermata o URL",
+        "items": { "type": "string", "minLength": 1 }
+      },
+      "legal_basis": {
+        "type": "array",
+        "minItems": 1,
+        "description": "Norme specifiche violate, es. 'Art. 13.2.a GDPR'. Non 'GDPR' generico.",
+        "items": { "type": "string", "minLength": 4 }
+      },
+      "problem": { "type": "string", "minLength": 20 },
+      "risk_scenario": { "type": "string", "minLength": 10 },
+      "declared_vs_actual": {
+        "type": "boolean",
+        "description": "true se il documento dichiara qualcosa di diverso da ciò che avviene realmente"
+      },
+      "mitigation": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": false,
+        "properties": {
+          "policy_text": {
+            "type": "object",
+            "required": ["replace", "with"],
+            "additionalProperties": false,
+            "properties": {
+              "replace": { "type": "string", "description": "Testo originale da rimuovere ('' se si tratta di un'aggiunta)" },
+              "with": { "type": "string", "minLength": 1 }
+            }
+          },
+          "ui": { "type": "string", "minLength": 5 },
+          "code": { "type": "string", "minLength": 5 },
+          "data_flow": { "type": "string", "minLength": 5, "description": "Flusso da bloccare, minimizzare, pseudonimizzare o cifrare" },
+          "process": { "type": "string", "minLength": 5, "description": "Misura organizzativa: DPA, registro, DPIA, procedura" }
+        }
+      },
+      "verification": { "type": "string", "minLength": 10 },
+      "confidence": {
+        "type": "string",
+        "enum": ["confirmed", "likely", "needs-info"]
+      }
+    }
+  }
+}
